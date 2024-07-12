@@ -57,10 +57,16 @@ public class TransactionServiceImpl implements TransactionService {
             log.info(ServiceConstans.getSendFraudLogMessage(message));
 
             kafkaSender.send(Mono.just(SenderRecord.create(
-                    new ProducerRecord<>(ServiceConstans.TOPIC_SEND_FRAUD, message), null))).subscribe();
+                    new ProducerRecord<>(ServiceConstans.TOPIC_SEND_FRAUD, message), null)))
+                    .doOnError(error -> handleKafkaSendError(error, message))
+                    .subscribe();
         } catch (JsonProcessingException e) {
             log.error("Error al convertir objeto a JSON para enviar a Kafka", e);
         }
+    }
+    
+    private void handleKafkaSendError(Throwable error, String message) {
+        log.error("Error al enviar mensaje a Kafka: {}", error.getMessage());
     }
     
     public Mono<TransactionDTO> getTransaction(UUID id) {

@@ -24,14 +24,15 @@ public class KafkaTransactionListener {
 	private final ObjectMapper objectMapper;
     private final KafkaReceiver<String, String> kafkaReceiver;
     
-    @Autowired
     private TransactionRepository transactionRepository;
 
 	
     public KafkaTransactionListener(KafkaReceiver<String, String> kafkaReceiver,
-            ObjectMapper objectMapper, KafkaSender<String, String> kafkaSender) {
+            ObjectMapper objectMapper, KafkaSender<String, String> kafkaSender, 
+            TransactionRepository transactionRepository) {
     	this.kafkaReceiver = kafkaReceiver;
     	this.objectMapper = objectMapper;
+    	this.transactionRepository = transactionRepository;
     }
     
     @PostConstruct
